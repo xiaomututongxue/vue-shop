@@ -4,16 +4,16 @@
 			<div class="login-img">
 				<img src="../assets/下载 (1).jpg" />
 			</div>
-			<el-form class="login-form">
-				<el-form-item >
-					<el-input></el-input>
+			<el-form class="login-form" :model="loginForm" :rules="loginRule" ref="loginForm">
+				<el-form-item prop="username">
+					<el-input prefix-icon="el-icon-user-solid" v-model="loginForm.username"></el-input>
 				</el-form-item>
-				<el-form-item >
-					<el-input></el-input>
+				<el-form-item prop="password">
+					<el-input prefix-icon="el-icon-lock" v-model="loginForm.password"></el-input>
 				</el-form-item>
 				<el-form-item class="login-btns">
-					<el-button type="primary">主要按钮</el-button>
-					<el-button type="success">成功按钮</el-button>
+					<el-button type="primary" @click="login">登录</el-button>
+					<el-button type="success" @click="loginReset">重置</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -21,6 +21,41 @@
 </template>
 
 <script>
+	export default {
+		data(){
+			return {
+				loginForm:{
+					username:'dujia',
+					password:'123456'
+				},
+				loginRule:{
+					username:[
+						{ required: true, message: '请输入用户名', trigger: 'blur' },
+            			{ min: 3, max: 5, message: '长度在 3 到 8 个字符', trigger: 'blur' }
+					],
+					password:[
+						{ required: true, message: '请输入密码', trigger: 'blur' },
+						{ min: 6, max: 12, message: '长度在 6到 12个字符', trigger: 'blur' }
+					]
+				}
+			}
+		},
+		methods:{
+			login(){
+				this.$refs.loginForm.validate((valid)=>{
+					console.log(valid)
+					if(!valid) return this.$message.error('登录失败')
+					this.$message.success('登录成功')
+					//编程式导航
+					//成功之后跳转到home页面
+					this.$router.push('/home')
+				});
+			},
+			loginReset(){
+				console.log(this.$refs.loginForm.resetFields())
+			}
+		}
+	}
 </script>
 
 <style scoped="scoped">

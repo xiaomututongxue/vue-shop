@@ -6,10 +6,11 @@
 			</div>
 			<el-form class="login-form" :model="loginForm" :rules="loginRule" ref="loginForm">
 				<el-form-item prop="username">
-					<el-input prefix-icon="el-icon-user-solid" v-model="loginForm.username"></el-input>
+					<el-input prefix-icon="el-icon-user-solid" placeholder="请输入用户名" v-model="loginForm.username"></el-input>
 				</el-form-item>
 				<el-form-item prop="password">
-					<el-input prefix-icon="el-icon-lock" v-model="loginForm.password"></el-input>
+					<!--<el-input prefix-icon="el-icon-lock" v-model="loginForm.password"></el-input>-->
+					<el-input prefix-icon="el-icon-lock" placeholder="请输入密码" v-model="loginForm.password" show-password></el-input>
 				</el-form-item>
 				<el-form-item class="login-btns">
 					<el-button type="primary" @click="login">登录</el-button>
@@ -25,8 +26,8 @@
 		data(){
 			return {
 				loginForm:{
-					username:'dujia',
-					password:'123456'
+					username:'',
+					password:''
 				},
 				loginRule:{
 					username:[

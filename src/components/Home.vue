@@ -7,6 +7,9 @@
 					<img src="../assets/biaoge.jpg" />
 					<span>电商后台管理系统</span>
 				</div>
+				<div class="fanhui" @click="fanhui">
+					<el-button type="success" round>退出登录</el-button>
+				</div>
 			</el-header>
 			<!--头部结束-->
 			<el-container>
@@ -17,45 +20,22 @@
 					<!--三条杠结束-->
 					<el-menu background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" :collapse="flag" :collapse-transition="false" router>
 						<!--第一个用户管理开始-->
-						<el-submenu index="1">
+						<el-submenu :index="list.id+''" v-for="list in lists" :key="list.id">
 							<template slot="title">
-								<i class="el-icon-location"></i>
-								<span>用户管理</span>
+								<i :class="iconObj[list.id]"></i>
+								<span>{{list.authName}}</span>
 							</template>
-							<el-menu-item index="Users">
+							<el-menu-item :index="song.path +''" v-for="song in list.children" key="song.id">
 								<template slot="title">
-									<i class="el-icon-location"></i>
-									<span>用户个人信息</span>
+									<!--<i :class="iconObj[list.id]"></i>-->
+									<i :class="iconObjSong[song.id]"></i>
+									<span>{{song.authName}}</span>
 								</template>
 							</el-menu-item>
-							<el-menu-item index="1-2">
-								<template slot="title">
-									<i class="el-icon-location"></i>
-									<span>用户管理菜单2</span>
-								</template>
-							</el-menu-item>
+							
 						</el-submenu>
 						<!--第一个用户管理结束-->
-						<!--第二个导航开始-->
-						<el-submenu index="2">
-							<template slot="title">
-								<i class="el-icon-menu"></i>
-								<span>商品管理</span>
-							</template>
-							<el-menu-item index="2-1">
-								<template slot="title">
-									<i class="el-icon-menu"></i>
-									<span>用户商品管理1</span>
-								</template>
-							</el-menu-item>
-							<el-menu-item index="2-2">
-								<template slot="title">
-									<i class="el-icon-menu"></i>
-									<span>用户商品管理2</span>
-								</template>
-							</el-menu-item>
-						</el-submenu>
-						<!--第二个导航结束-->
+						
 					</el-menu>
 				</el-aside>
 				<!--侧边栏左边结束-->
@@ -73,12 +53,45 @@
 	export default {
 		data(){
 			return {
-				flag:false
+				flag:false,
+				lists:[],
+				iconObj:{
+					125:'iconfont iconManagement',
+					103:'iconfont iconquanxianguanli',
+					101:'iconfont iconshangpinguanli',
+					102:'iconfont icondingdan',
+					145:'iconfont iconshujutongji'
+				},
+				iconObjSong:{
+					110:'iconfont iconyonghuliebiao',
+					111:'iconfont iconjiaoseliebiao',
+					112:'iconfont iconquanxianliebiao',
+					104:'iconfont iconsp-list',
+					115:'iconfont iconfenleiliebiao',
+					121:'iconfont iconshangpinfenlei',
+					107:'iconfont icondingdanliebiao',
+					146:'iconfont iconbaobiao'
+				}
 			}
+		},
+		created(){
+			this.getMenuList()
 		},
 		methods:{
 			huishou(){
 				this.flag = ! this.flag
+			},
+			fanhui(){
+				//点击清除本地存储
+				window.sessionStorage.clear();
+				//点击回到登录页面
+				this.$router.push('/login')
+			},
+			async getMenuList(){
+				const {data:res} = await this.$http.get('menus')
+				console.log(res.data)
+				if(res.meta.status != 200) return this.$message.error(res.mate.msg)
+				this.lists = res.data;
 			}
 		}
 	}
@@ -93,6 +106,8 @@
 	/*头部开始*/
 	.el-header {
 		background-color: powderblue;
+		display: flex;
+		justify-content: space-between;
 	}
 	.header-img img {
 		height: 60px;
@@ -107,6 +122,9 @@
 		margin-left: 50px;
 		font-size: 23px;
 		color: #fff;
+	}
+	.fanhui {
+		padding: 10px;
 	}
 	/*头部样式结束*/
 	.el-container {
@@ -128,6 +146,9 @@
 	}
 	.el-menu{
 		border: none!important;
+	}
+	.iconfont {
+		margin-right: 10px;
 	}
 	/*左边样式结束*/
 	/*内容样式开始*/

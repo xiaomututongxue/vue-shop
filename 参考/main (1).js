@@ -1,18 +1,19 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-//引入elementUI
+import './assets/base.css'
+//阿里图标库
+import './assets/font/iconfont.css'
+
+//引入elementUI库
 import ElementUI from 'element-ui'
-//Element库的样式引入
-import 'element-ui/lib/theme-chalk/index.css' 
-import './assets/rest.css'
-Vue.use(ElementUI)
+//elementUI库的样式文件
+import 'element-ui/lib/theme-chalk/index.css';
+Vue.use(ElementUI);
 
-import '../src/assets/font/iconfont.css'   
-
-//引入ajax
+//引入axios,用来发送ajax
 import axios from 'axios'
-//配置路径
+//配置一下路径
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 //有权限的api添加token
 axios.interceptors.request.use( config =>{
@@ -21,8 +22,15 @@ axios.interceptors.request.use( config =>{
 		config.headers.Authorization = window.sessionStorage.getItem('token');
 		return config;
 });
-//axios挂载在vue实例原型对象上，以后就直接使用this.$http
+
+
+//axios挂载到Vue实例的原型对象上,后面就是可以直接使用this.$http
 Vue.prototype.$http = axios
+
+
+
+
+
 
 Vue.config.productionTip = false
 

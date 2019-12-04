@@ -43,15 +43,33 @@
 		},
 		methods:{
 			login(){
-				this.$refs.loginForm.validate((valid)=>{
+				this.$refs.loginForm.validate( async valid => {
 					console.log(valid)
 					if(!valid) return this.$message.error('登录失败')
+					//发送ajax		
+					//第一种方式
+					/*const res = this.$http.post('login',this.loginForm);
+					this.$http.post('login',this.loginForm).then(function(res){
+						//console.log(res)
+						console.log(res.data)
+					})*/
+					//第二种方式
+					/*const res = await this.$http.post('login',this.loginForm)
+					console.log(res.data)*/
+					//es6中解构赋值
+					const {data:res} = await this.$http.post('login',this.loginForm)
+					console.log(res)
+					if( res.meta.status != 200 ) return this.$message.error(res.meta.msg)
+					//然后把这个唯一的token储存起来，使用会话的方式（浏览器只要关闭就会没有）
+					window.sessionStorage.setItem('token',res.data.token)
+					//登录正确后进入下一个主页，否则不行
 					this.$message.success('登录成功')
 					//编程式导航
 					//成功之后跳转到home页面
 					this.$router.push('/home')
 				});
 			},
+			//重置方法
 			loginReset(){
 				console.log(this.$refs.loginForm.resetFields())
 			}
@@ -63,6 +81,7 @@
 	#login {
 		height: 100%;
 		background-color: pink;
+		
 	}
 	.login-content {
 		width: 400px;

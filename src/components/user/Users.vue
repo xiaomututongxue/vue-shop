@@ -24,22 +24,39 @@
 		</el-card>
 		<!--卡片结束-->
 		<!--表格-->
-		<el-table :data="tableData" border style="width: 100%">
-			<el-table-column prop="name" label="姓名" width="180"></el-table-column>
-			
-			<el-table-column prop="date" label="邮箱" width="180"></el-table-column>
-			
-			<el-table-column prop="address" label="地址"></el-table-column>
-			<el-table-column prop="beizhu" label="备注"></el-table-column>
-			<el-table-column  label="操作">
-				<el-button type="primary" icon="el-icon-edit"></el-button>
-				<el-button type="primary" icon="el-icon-delete"></el-button>
+		<el-table :data="userList" border style="width: 100%">
+			<el-table-column type="index" label="#"></el-table-column>
+			<el-table-column prop="username" label="姓名" width="180"></el-table-column>
+			<el-table-column prop="email" label="邮箱" width="180"></el-table-column>
+			<el-table-column prop="mobile" label="联系方式"></el-table-column>
+			<el-table-column prop="role_name" label="角色"></el-table-column>
+			<el-table-column prop="" label="状态">
+				<!--作用域卡槽-->
+				<template slot-scope='scope'>
+					<!--{{scope.row}}-->
+					<el-switch v-model="scope.row.mg_state" @change="onOffChange(scope.row)"></el-switch>
+				</template>
 			</el-table-column>
-			
-
+			<el-table-column  label="操作">
+				<el-button type="primary" icon="el-icon-edit" circle></el-button>
+				<el-button type="danger" icon="el-icon-delete" circle></el-button>
+				<el-button type="info" icon="el-icon-s-tools" circle></el-button>
+			</el-table-column>
 		</el-table>
-		
 		<!--表格结束-->
+		<!--分页功能开始-->
+		 <el-pagination
+	      @size-change="handleSizeChange"
+	      @current-change="handleCurrentChange"
+	      :current-page="usersData.pagenum"
+	      :page-sizes="[1, 2, 3, 4]"
+	      :page-size="usersData.pagesize"
+	      layout="total, sizes, prev, pager, next, jumper"
+	      :total="total">
+	    </el-pagination>
+	    
+	    
+	    
 	</div>
 </template>
 
@@ -47,24 +64,52 @@
 	export default {
 		data() {
 			return {
-				tableData: [{
-					date: '306968428@qq.com',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1518 弄',
-					beizhu: ''
-				}, {
-					date: '306968428@qq.com',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1517 弄'
-				}, {
-					date: '306968428@qq.com',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1519 弄'
-				}, {
-					date: '306968428@qq.com',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1516 弄'
-				}]
+				usersData:{
+					//查询的用户
+					query:'',
+					//当前的页码
+					pagenum:1,
+					//每一页展示的数据
+					pagesize:2
+				},
+				//所有用户的基本数据
+				userList:[],
+				total:0
+			}
+		},
+		created(){
+			this.getBiaoGe()
+		},
+		methods:{
+			//获取后台用户列表
+			async getBiaoGe(){
+				const {data:res} =  await this.$http.get('users',{params:this.usersData})
+//				console.log(res)
+				if(res.meta.status != 200) return this.$message.error(res.meta.msg);
+				this.userList = res.data.users;
+				this.total = res.data.total
+			},
+			//状态开关事件
+			async onOffChange(datas){
+				const {data:res} = await this.$http.put(`users/${datas.id}/state/${datas.mg_state}`)
+				console.log(res)
+				if(res.meta.status != 200){
+					res.data.mg_state = !res.data.mg_state
+					return this.$message.error(res.meta.msg)
+				}
+				this.$message.success('修改成功')
+			},
+			//展示每一页的数据量
+			handleSizeChange(val){
+				console.log(val)
+				this.usersData.pagesize = val;
+				this.getBiaoGe()
+			},
+			//当前页的改变
+			handleCurrentChange(val){
+				console.log(val)
+				this.usersData.pagenum = val;
+				this.getBiaoGe()
 			}
 		}
 	}
@@ -76,6 +121,9 @@
 	}
 	
 	.el-card {
+		margin: 10px 0;
+	}
+	.el-pagination {
 		margin: 10px 0;
 	}
 </style>

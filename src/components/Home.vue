@@ -18,17 +18,17 @@
 					<!--三条杠开始-->
 					<div class="adidas" @click="huishou"> | | | </div>
 					<!--三条杠结束-->
-					<el-menu background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" :collapse="flag" :collapse-transition="false" router>
+					<el-menu background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" :collapse="flag" :collapse-transition="false" router :default-active="path">
 						<!--第一个用户管理开始-->
 						<el-submenu :index="list.id+''" v-for="list in lists" :key="list.id">
 							<template slot="title">
 								<i :class="iconObj[list.id]"></i>
 								<span>{{list.authName}}</span>
 							</template>
-							<el-menu-item :index="song.path +''" v-for="song in list.children" key="song.id">
+							<el-menu-item :index="song.path +''" v-for="song in list.children" :key="song.id" @click="savepath(song.path)">
 								<template slot="title">
 									<!--<i :class="iconObj[list.id]"></i>-->
-									<i :class="iconObjSong[song.id]"></i>
+									<i :class="iconObjSong"></i>
 									<span>{{song.authName}}</span>
 								</template>
 							</el-menu-item>
@@ -53,6 +53,7 @@
 	export default {
 		data(){
 			return {
+				path:'',
 				flag:false,
 				lists:[],
 				iconObj:{
@@ -75,7 +76,9 @@
 			}
 		},
 		created(){
-			this.getMenuList()
+			this.getMenuList();
+			//获取本地存储的path
+			this.path = window.sessionStorage.getItem('path');
 		},
 		methods:{
 			huishou(){
@@ -89,9 +92,14 @@
 			},
 			async getMenuList(){
 				const {data:res} = await this.$http.get('menus')
-				console.log(res.data)
+				//console.log(res.data)
 				if(res.meta.status != 200) return this.$message.error(res.mate.msg)
 				this.lists = res.data;
+			},
+			//存储本地path
+			savepath(path){
+				window.sessionStorage.setItem('path',path)
+				this.path = path
 			}
 		}
 	}

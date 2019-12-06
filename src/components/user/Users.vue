@@ -13,12 +13,12 @@
 			<!--栅格系统-->
 			<el-row :gutter="50">
 				<el-col :span="16">
-					<el-input placeholder="请输入内容">
-						<el-button slot="append" icon="el-icon-search"></el-button>
+					<el-input placeholder="请输入内容" v-model="usersData.query" clearable @clear="getBiaoGe">
+						<el-button slot="append" icon="el-icon-search" @click="getBiaoGe"></el-button>
 					</el-input>
 				</el-col>
 				<el-col :span="8">
-					<el-button type="primary">添加用户</el-button>
+					<el-button type="primary" @click='dialogVisible=true'>添加用户</el-button>
 				</el-col>
 			</el-row>
 		</el-card>
@@ -26,8 +26,8 @@
 		<!--表格-->
 		<el-table :data="userList" border style="width: 100%">
 			<el-table-column type="index" label="#"></el-table-column>
-			<el-table-column prop="username" label="姓名" width="180"></el-table-column>
-			<el-table-column prop="email" label="邮箱" width="180"></el-table-column>
+			<el-table-column prop="username" label="姓名" ></el-table-column>
+			<el-table-column prop="email" label="邮箱" ></el-table-column>
 			<el-table-column prop="mobile" label="联系方式"></el-table-column>
 			<el-table-column prop="role_name" label="角色"></el-table-column>
 			<el-table-column prop="" label="状态">
@@ -38,7 +38,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column  label="操作">
-				<el-button type="primary" icon="el-icon-edit" circle></el-button>
+				<el-button type="primary" icon="el-icon-edit" circle @click="modification"></el-button>
 				<el-button type="danger" icon="el-icon-delete" circle></el-button>
 				<el-button type="info" icon="el-icon-s-tools" circle></el-button>
 			</el-table-column>
@@ -55,6 +55,32 @@
 	      :total="total">
 	    </el-pagination>
 	    
+	    <el-dialog title="添加用户" :visible.sync="dialogVisible" width="50%" @close='onOff'>
+	    	<el-form :model="gitForm" :rules="addusers" ref="addRefs" label-width="70px">
+	    		<!--用户名-->
+	    		<el-form-item label="用户名" prop="username">
+				    <el-input v-model="gitForm.username"></el-input>
+				</el-form-item>
+				<!--密码-->
+				<el-form-item label="密码" prop="password">
+				    <el-input v-model="gitForm.password"></el-input>
+				</el-form-item>
+				<!--邮箱-->
+				<el-form-item label="邮箱" prop="email">
+				    <el-input v-model="gitForm.email"></el-input>
+				</el-form-item>
+				<!--手机号-->
+				<el-form-item label="手机" prop="mobile">
+				    <el-input v-model="gitForm.mobile"></el-input>
+				</el-form-item>
+	    	</el-form>
+	    	
+	    	<span slot="footer" class="dialog-footer">
+			    <el-button @click="dialogVisible = false">取 消</el-button>
+			    <el-button type="primary" @click="addUser">确 定</el-button>
+			</span>
+	    	
+	    </el-dialog>
 	    
 	    
 	</div>
@@ -63,6 +89,23 @@
 <script>
 	export default {
 		data() {
+			var checkEmail = (rule, value, callback)=>{
+				//自定义一个邮箱的验证规则,使用正则
+				const regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+				if(regEmail.test(value)) {
+					callback()
+				}
+				callback(new Error('验证失败'));
+			}
+			//自定义验证手机号
+			var checkMobil = (rule, value, callback)=>{
+				//自定义一个邮箱的验证规则,使用正则
+				const regMobil = /^1(3|4|5|7|8|9)\d{9}$/;
+				if(regMobil.test(value)) {
+					callback()
+				}
+				callback(new Error('验证失败'));
+			}
 			return {
 				usersData:{
 					//查询的用户
@@ -74,7 +117,33 @@
 				},
 				//所有用户的基本数据
 				userList:[],
-				total:0
+				//总的数据条数
+				total:0,
+				//控制对话框的显示隐藏
+				dialogVisible:false,
+				gitForm:{
+					username:'',
+		          	password:'',
+		          	email:'',
+		          	mobile:''
+				},
+				//添加用户验证规则
+				addusers:{
+					username:[
+		          		 { required: true, message: '请输入用户名', trigger: 'blur' },
+		           		 { min: 3, max: 8, message: '长度在 3 到 8个字符', trigger: 'blur' }
+		          	],
+		          	password:[
+		          		 { required: true, message: '请输入密码', trigger: 'blur' },
+		           		 { min: 6, max: 18, message: '长度在 6 到18个字符', trigger: 'blur' }
+		          	],
+		          	email:[
+						 { validator:checkEmail, trigger: 'blur' }
+		          	],
+		          	mobile:[
+		          		{ validator:checkMobil, trigger: 'blur' }
+		          	]
+				}
 			}
 		},
 		created(){
@@ -110,6 +179,30 @@
 				console.log(val)
 				this.usersData.pagenum = val;
 				this.getBiaoGe()
+			},
+			//关闭弹框清除里面写的内容
+			onOff(){
+				this.$refs.addRefs.resetFields();
+			},
+			addUser(){
+				this.$refs.addRefs.validate(async (vali)=>{
+					console.log(vali)
+					if(!vali){
+						return this.$message.error('添加失败')
+					}
+					//预验证通过,发送ajax请求
+					const {data:res} = await this.$http.post('users',this.gitForm);
+					if(res.meta.status !== 201 ){
+						return this.$message.error(res.meta.msg)
+					}
+					//关闭对话框
+					this.dialogVisible = false;
+					this.getBiaoGe();
+				})
+			},
+			//修改每条数据信息
+			modification(){
+				console.log(1)
 			}
 		}
 	}

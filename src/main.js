@@ -29,6 +29,15 @@ Vue.prototype.$http = axios
 
 Vue.config.productionTip = false
 
+//定义一个时间过滤器
+Vue.filter('dateFilter',function(val){
+	const date = new Date(val);
+	const y = date.getFullYear();
+	const m = (date.getMonth() + 1 + '' ).padStart(2,'0');
+	const d = (date.getDate() + '').padStart(2,0);
+	return `${y}-${m}-${d}`
+})
+
 new Vue({
   router,
   render: h => h(App)

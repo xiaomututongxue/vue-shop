@@ -9,6 +9,7 @@ import Rights from '../components/permissions/Rights.vue'
 import Categories from '../components/goods/Categories.vue'
 import Params from '../components/goods/Params.vue'
 import Goods from '../components/goods/Goods.vue'
+import Add from '../components/goods/Add.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -19,13 +20,14 @@ const routes = [
 		component:Home,
 		redirect:'/welcome',
 		children:[
-			{path:'/Welcome',component:Welcome},
-			{path:'/Users',component:Users},
-			{path:'/Roles',component:Roles},
-			{path:'/Rights',component:Rights},
-			{path:'/Categories',component:Categories},
-			{path:'/Params',component:Params},
-			{path:'/Goods',component:Goods},
+			{path:'/welcome',component:Welcome},
+			{path:'/users',component:Users},
+			{path:'/roles',component:Roles},
+			{path:'/rights',component:Rights},
+			{path:'/categories',component:Categories},
+			{path:'/params',component:Params},
+			{path:'/goods',component:Goods},
+			{path:'/goods/Add',component:Add},
 		]
 	},
 	

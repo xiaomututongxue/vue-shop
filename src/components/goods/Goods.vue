@@ -16,7 +16,7 @@
 					</el-input>
 				</el-col>
 				<el-col :span="5">
-					<el-button type="primary">添加商品</el-button>
+					<el-button type="primary" @click="addGoodsList">添加商品</el-button>
 				</el-col>
 			</el-row>
 			<!--表格展示商品-->
@@ -25,7 +25,11 @@
 		      <el-table-column prop="goods_name" label="商品名称" ></el-table-column>
 		      <el-table-column prop="goods_price" label="商品价格(元)" width="150"></el-table-column>
 		      <el-table-column prop="goods_weight" label="重量(克)" width="100"></el-table-column>
-		      <el-table-column prop="add_time" label="创建时间" width="150"></el-table-column>
+		      <el-table-column prop="add_time" label="创建时间" width="150">
+		      	<template slot-scope='scope'>
+		      		{{scope.row.add_time | dateFilter}}
+		      	</template>
+		      </el-table-column>
 		      <el-table-column  label="操作" width="150">
 		      	 <el-button type="primary" icon="el-icon-edit" circle></el-button>
 		      	 <el-button type="danger" icon="el-icon-delete" circle></el-button>
@@ -84,6 +88,11 @@
 				console.log(val+'a')
 				this.queryInfo.pagenum = val
 				this.getGoodsList()
+			},
+			//点击添加商品
+			addGoodsList(){
+				//console.log(321)
+				this.$router.push('goods/add')
 			}
 		},
 		created(){

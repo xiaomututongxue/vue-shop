@@ -25,7 +25,7 @@
 								<i :class="iconObj[list.id]"></i>
 								<span>{{list.authName}}</span>
 							</template>
-							<el-menu-item :index="song.path +''" v-for="song in list.children" :key="song.id" @click="savepath(song.path)">
+							<el-menu-item :index="'/'+ song.path +''" v-for="song in list.children" :key="song.id" @click="savepath('/'+song.path)">
 								<template slot="title">
 									<!--<i :class="iconObj[list.id]"></i>-->
 									<i :class="iconObjSong"></i>

@@ -38,7 +38,7 @@
 			</el-table-column>
 			<el-table-column label='操作'>
 				
-				slot-scope="scope"
+				<template slot-scope='scope'>
 					<!--修改按钮-->
 				  <el-button @click='editUserInfo(scope.row.id)' type="primary" icon="el-icon-edit" circle size='mini'></el-button>
 				  <!--删除按钮-->

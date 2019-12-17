@@ -7,8 +7,9 @@
 <script>
 </script>
 
-<style>
-	.welcome {
-		background-color: orange;
+<style scoped="scoped">
+	#welcome {
+		/*background-color: orange;*/
+		
 	}
 </style>

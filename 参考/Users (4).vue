@@ -38,11 +38,11 @@
 			</el-table-column>
 			<el-table-column label='操作'>
 				
-				slot-scope="scope"
+				<template slot-scope='scope'>
 					<!--修改按钮-->
 				  <el-button @click='editUserInfo(scope.row.id)' type="primary" icon="el-icon-edit" circle size='mini'></el-button>
 				  <!--删除按钮-->
-				  <el-button type="danger" icon="el-icon-delete" circle size='mini'></el-button>
+				  <el-button @click='removeUserById(scope.row.id)' type="danger" icon="el-icon-delete" circle size='mini'></el-button>
 				  <!--设置按钮-->
 				   <el-tooltip class="item" effect="dark" content="设置角色" placement="top" :enterable='false'>
 				   	<el-button type="danger" icon="el-icon-s-tools" circle size='mini'></el-button>
@@ -292,15 +292,32 @@
 						//重新渲染页面
 						this.getUsersList()
 					})
+			},
+			//根据用户ID删除该用户的方法
+			async removeUserById(id){
+				//alert(id)
+				//给用户一个提示框,是都真的删除
+				const ret = await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+       }).catch(err=>  err )
+				console.log(ret)
+				//confirm 点击确定的时候的结果
+				//cancel 点击取消的结果
+				if(ret !== 'confirm') return this.$message.info('取消删除');
+				//调用api实现删除用户
+				const { data:res } = await this.$http.delete('users/' + id )
+				if(res.meta.status != 200 ) return this.$message.error('删除失败')
+				this.$message.success('删除成功');
+				this.getUsersList();
 			}
 		}
 	}
 </script>
 
 <style scoped>
-	.el-card {
-		margin: 10px 0;
-	}
+	
 	.el-pagination {
 		margin-top: 10px;
 	}

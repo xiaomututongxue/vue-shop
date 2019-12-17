@@ -162,6 +162,7 @@
 	/*内容样式开始*/
 	.el-main {
 		background-color: blanchedalmond;
+		
 	}
 	/*内容样式结束*/
 </style>

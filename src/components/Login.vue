@@ -80,7 +80,7 @@
 <style scoped="scoped">
 	#login {
 		height: 100%;
-		background-color: pink;
+		background: url(../assets/edb49e621b8ceb81549f1f6dd38e0556.jpg);
 		
 	}
 	.login-content {

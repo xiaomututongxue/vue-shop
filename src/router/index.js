@@ -4,6 +4,11 @@ import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
 import Welcome from '../components/Welcome.vue'
 import Users from '../components/user/Users.vue'
+import Roles from '../components/permissions/Roles.vue'
+import Rights from '../components/permissions/Rights.vue'
+import Categories from '../components/goods/Categories.vue'
+import Params from '../components/goods/Params.vue'
+import Goods from '../components/goods/Goods.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -15,7 +20,12 @@ const routes = [
 		redirect:'/welcome',
 		children:[
 			{path:'/Welcome',component:Welcome},
-			{path:'/Users',component:Users}
+			{path:'/Users',component:Users},
+			{path:'/Roles',component:Roles},
+			{path:'/Rights',component:Rights},
+			{path:'/Categories',component:Categories},
+			{path:'/Params',component:Params},
+			{path:'/Goods',component:Goods},
 		]
 	},
 	

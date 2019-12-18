@@ -19,7 +19,7 @@
 			  <el-step title="完成"></el-step>
 			</el-steps>
 			<!--标签页-->
-			<el-form label-position='top' :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+			<el-form label-position='top' :model="ruleForm" :rules="rules" ref="addRuleForm" label-width="100px" class="demo-ruleForm">
 				<el-tabs @tab-click='tabClick' :before-leave='beforLeave' :tab-position="'left'" v-model="activeName">
 				    <el-tab-pane label="基本信息" name='0'>
 				    	<el-form-item label="商品名称" prop="goods_name">
@@ -58,16 +58,37 @@
 				    	</el-form-item>
 				    	</el-form-item>
 				    </el-tab-pane>
-				    <el-tab-pane label="商品图片" name='3'>商品图片</el-tab-pane>
-				    <el-tab-pane label="商品内容" name='4'>商品内容</el-tab-pane>
+				    <el-tab-pane label="商品图片" name='3'>
+				    	<!--上传图片-->
+				    	<el-upload 
+				    	  :on-success='successImg'
+				    	  class="upload-demo"
+				    	  :action="uploadAction"
+				    	  :headers='headersToken'
+						  :on-preview="handlePreview"
+						  :on-remove="handleRemove"
+						  list-type="picture">
+						  <el-button size="small" type="primary">点击上传</el-button>
+						  
+						</el-upload>
+				    </el-tab-pane>
+				    <el-tab-pane label="商品内容" name='4'>
+				    	<quill-editor v-model='ruleForm.goods_introduce'></quill-editor>
+				    	<el-button type="primary" @click='addCommodity'>添加商品</el-button>
+				    </el-tab-pane>
 				</el-tabs>
 			</el-form>
 		</el-card>
+		<el-dialog title="预览" :visible.sync="dialogVisibles" width="50%">
+		  <img :src="imgs" class="imgs"/>
+		</el-dialog>
+
 	</div>
 	
 </template>
 
 <script>
+	import _ from 'lodash'
 	export default {
 		data(){
 			return {
@@ -80,6 +101,9 @@
 					goods_number:0,//商品数量
 					//分类列表
 					goods_cat:[],
+					pics:[],
+					goods_introduce:'',
+					attrs:[]
 				},
 				//校验规则
 				rules:{
@@ -98,7 +122,17 @@
 				//所有商品分类
 				allOptions:[],
 				manyList:[],//参数数据
-				onlyList:[]//属性数据
+				onlyList:[],//属性数据
+				//上传路径
+				uploadAction:"http://127.0.0.1:8888/api/private/v1/upload",
+				//配置token
+				headersToken:{
+					Authorization:window.sessionStorage.getItem('token')
+				},
+				//预览大图窗口开关与关闭
+				dialogVisibles:false,
+				//预览大图的地址
+				imgs:''
 			}
 		},
 		methods:{
@@ -156,6 +190,74 @@
 					}
 					this.onlyList = res.data
 				}
+			},
+			//点击图片上传
+			handlePreview(file){
+				console.log(123)
+				console.log(file)
+				this.dialogVisibles = true
+				this.imgs = file.response.data.url
+			},
+			//删除图片
+			handleRemove(file){
+				console.log(321)
+				console.log(file)
+				//临时存储的路径
+				const temPath = file.response.data.tmp_path
+				const i = this.ruleForm.pics.findIndex(x => {
+					x.pic == temPath
+				})
+				this.ruleForm.pics.splice(i,1)
+				console.log(this.ruleForm)
+			},
+			//图片上传成功以后的存储路径
+			successImg(response){
+				console.log(response)
+				const responseObj = {
+					pic:response.data.tmp_path
+				}
+				this.ruleForm.pics.push(responseObj)
+				console.log(this.ruleForm)
+			},
+			
+			addCommodity(){
+				console.log(123456789)
+				//表单预校验
+				this.$refs.addRuleForm.validate(async vali=>{
+					if(!vali){
+						return this.$message.error('请输入内容')
+					}
+					console.log('ojbk')
+					
+					const form = _.cloneDeep(this.ruleForm)
+					
+					form.goods_cat = form.goods_cat.join(',')
+					
+					this.manyList.forEach(item=>{
+						const obj = {
+							attr_id:item.attr_id,
+							attr_value:item.attr_vals.join(' ')
+						}
+						this.ruleForm.attrs.push(obj)
+					})
+					this.onlyList.forEach(item=>{
+						const obj = {
+							attr_id:item.attr_id,
+							attr_value:item.attr_vals
+						}
+						this.ruleForm.attrs.push(obj)
+					})
+					form.attrs = this.ruleForm.attrs
+					console.log(form)
+					//调用api接口
+					const {data:res} = await this.$http.post('goods',form)
+					if(res.meta.status !== 201){
+						return this.$message.error('创建商品失败')
+					}
+					this.$message.success('创建成功');
+					this.$router.push('/goods')
+
+				})
 			}
 		},
 		created(){
@@ -176,5 +278,8 @@
 <style scoped="scoped">
 	.el-steps {
 		margin: 15px 0;
+	}
+	.imgs {
+		width: 100%;
 	}
 </style>

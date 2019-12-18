@@ -29,6 +29,15 @@ Vue.prototype.$http = axios
 
 Vue.config.productionTip = false
 
+import VueQuillEditor from 'vue-quill-editor'
+
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+Vue.use(VueQuillEditor, /* { default global options } */)
+
 //定义一个时间过滤器
 Vue.filter('dateFilter',function(val){
 	const date = new Date(val);

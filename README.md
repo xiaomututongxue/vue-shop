@@ -1,16 +1,16 @@
 # my-xiangmu
 
-## Project setup
+## 项目安装
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### 启动项目
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### 部署项目
 ```
 npm run build
 ```
